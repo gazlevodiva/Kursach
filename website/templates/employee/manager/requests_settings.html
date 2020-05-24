@@ -57,10 +57,12 @@
                     <h5>Статус</h5>
                 </label>            
                 <select name="status" class="form-control form-control-sm">
-                    <option selected>inprocess</option>
-                    <option>postponed</option>
-                    <option>done</option>
-                    <option>crashed</option>
+                    <option selected>{{deal.status}}</option>
+                    {% for x in stt %}
+                        {% if x != deal.status %}
+                            <option>{{x}}</option>
+                        {% endif %}
+                    {%endfor%}
                 </select>
             {% endif %}
         </div>
@@ -73,9 +75,14 @@
                 <label for="exampleFormControlSelect1" required>
                     <h5>Сотрудник</h5>
                 </label>
-                <select name="employee" class="form-control form-control-sm">
+                <select name="employee" class="form-control form-control-sm" required>
+                    {% if deal.employee.username%}
+                        <option selected>{{deal.employee.username}}</option>
+                    {%endif%}
                     {% for x in empl %}
-                    <option>{{x.username}}</option>
+                        {% if x.username != deal.employee.username %}
+                            <option>{{x.username}}</option>
+                        {% endif %}
                     {%endfor%}
                 </select>
             {% endif %}
@@ -87,7 +94,7 @@
                 <h4> Описание: <a class="text-muted">{{context.description}}</a></h4>
             {% else %}
                 <label for="validationTextarea"><h4>Описание</h4></label>
-                <textarea class="form-control " id="validationTextarea" placeholder="Напишите комментарии и заметки к заказу" name="description"></textarea>
+                <textarea class="form-control " id="validationTextarea" placeholder="Напишите комментарии и заметки к заказу" name="description" required>{{deal.description}}</textarea>
             {% endif %}
         </div>
 
@@ -98,7 +105,7 @@
             {% else %}
                 <label for="exampleFormControlSelect1" required>
                     <h5>Цена</h5>
-                    <input type="text" class="form-control" id="validationCustom02" name="price" placeholder="Сумма грн">
+                    <input type="text" class="form-control" id="validationCustom02" name="price" placeholder="Сумма грн" value="{{deal.price}}" required>
                 </label>
             {% endif %}
         </div>
@@ -115,7 +122,7 @@
                     <form method="post">
                       <div class="form-group"> <!-- Date input -->
                         <label class="control-label" for="date" style="font-size: 18px">Дата окончания</label>
-                        <input class="form-control" id="date" name="date" placeholder="MM/DD/YYYY" type="text"/>
+                        <input class="form-control" id="date" name="date" placeholder="MM/DD/YYYY" type="text" value="{{f_date}}">
                       </div>
                      </form>
                      <!-- Form code ends --> 
@@ -126,7 +133,7 @@
 
             {% if context.status != 'done'%}
                 <!-- Submitting -->
-                <div class="form-group mt-5">
+                <div class="form-group mt-3">
                     <button class="btn btn-primary" type="submit">Сохранить</button>
                 </div>
             {% endif %}
@@ -149,11 +156,12 @@
                 // Loop over them and prevent submission
                 var validation = Array.prototype.filter.call(forms, function(form) {
                     form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
+                        let final_date = document.getElementById('date').value;
+                        if(Date.parse(final_date) < Date.now()){
+                            alert('Дэдлайн не может быть в прошлом!!! Поставьте нормальную дату!!!')
                             event.preventDefault();
                             event.stopPropagation();
                         }
-                        form.classList.add('was-validated');
                     }, false);
                 });
             }, false);

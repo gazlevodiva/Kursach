@@ -32,7 +32,7 @@
                         name="name"
                         placeholder="Имя"
                         maxlength="30"
-                        value="{{ user.name }}">
+                        value="{{ user.name }}" required>
             </div>
             <div class="col-md-4 mb-3">
                 <label for="validationCustom02">
@@ -44,7 +44,7 @@
                         name="surname"
                         placeholder="Фамилия"
                         maxlength="30"
-                        value="{{ user.surname }}">
+                        value="{{ user.surname }}" required>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
                     placeholder="email@gmail.com"
                     maxlength="40"
 					pattern = "^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$"
-                    value="{{ user.email }}">
+                    value="{{ user.email }}" required>
         </div>
 
         <!-- Phone -->
@@ -73,8 +73,8 @@
                     id="exampleFormControlInput1"
                     name="phone"
                     placeholder="+38023456789"
-                    maxlength="15"
-                    pattern="\+[0-9]{9,11}"
+                    maxlength="16"
+                    pattern="\+[0-9]{9,12}"
                     value="{{ user.phone }}">
         </div>
 
@@ -95,12 +95,10 @@
              <div class="container-fluid">
               <div class="row">
                 <!-- Form code begins -->
-                <form method="post">
                   <div class="form-group"> <!-- Date input -->
                     <label class="control-label" for="date" style="font-size: 18px">Дата рождения</label>
-                    <input class="form-control" id="date" name="date" placeholder="MM/DD/YYYY" type="text"/>
+                    <input class="form-control" id="date" name="date" placeholder="MM/DD/YYYY" type="text" value="{{birthday}}" required/>
                   </div>
-                 </form>
                  <!-- Form code ends --> 
               </div>    
              </div>

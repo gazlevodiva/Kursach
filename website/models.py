@@ -168,7 +168,7 @@ class Deals(models.Model):
                 if pkey == obkey:
                     setattr(self, pkey, post[pkey])
         datearr = post['date'].split('/')
-        self.birthday = date(int(datearr[2]), int(datearr[0]), int(datearr[1]))
+        self.final_date = date(int(datearr[2]), int(datearr[0]), int(datearr[1]))
         self.save()
 
 

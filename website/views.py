@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Group
 from django.db import connection
-from datetime import datetime
+from datetime import datetime, date
 from .models import *
 from .forms import *
 
@@ -78,9 +78,13 @@ def sign_in(request):
             # происходит авторизация
             user = form.get_user()            
             login(request, user)
-            if "Employees" or "Managers" in request.user.groups.all()[0]:
+
+            if user.groups.all()[0].name == "Employees" or user.groups.all()[0].name ==  "Managers":
                 return redirect("/foremployee")
-            return redirect(index)
+            elif user.groups.all()[0].name == "Admins":
+            	return redirect("/admin_settings_empl")
+            else:
+            	return redirect(index)
     else:
         form = AuthenticationForm()
 
@@ -124,14 +128,8 @@ def profile_settings(request):
     username = request.user.username
     user = Customers.objects.get(username=username)
     if request.method == "GET":
-        # необходимые ограничения для формы
-        day = user.birthday.strftime("%d")
-        year = user.birthday.strftime("%Y")
-        month = user.birthday.strftime("%m")
-        check_year = datetime.now().strftime("%Y")
-        check_month = datetime.now().strftime("%m")
-        context = {"user": user, "day": day, "month": month, "year": year}
-
+        birthday = user.birthday.strftime("%m/%d/%Y")
+        context = {"user": user, 'birthday':birthday}
         return render(request, "customer/profile_settings.html", context=context)
 
     if request.method == "POST":
@@ -265,13 +263,14 @@ def projects_done(request):
     return render(request, "employee/projects_done.html", context)
 
 
+
 # Меню только менеджеру
 def requests_settings(request, deal_id=None):
     # изменения касательно заявки пользователя
     # Данные вносятся после уточнения информации
     # о заказе у клиента
     if request.method == "POST":
-        deal = Deals.objects.get(id=deal_id)        
+        deal = Deals.objects.get(id=deal_id) 
         employee = Employee.objects.get(username=request.POST['employee'])
         deal.update(request.POST)
         deal.employee_id = employee.id
@@ -299,8 +298,18 @@ def requests_settings(request, deal_id=None):
             emp_active = Employee.objects.get(id=deal.employee_id)
         else:
             emp_active = {'username':''}
-        context = {'context': context[0], 'empl': employees, 'emp_active': emp_active}    
+        if deal.final_date == None:
+            final_date = datetime.now().strftime("%m/%d/%Y")
+        else:
+            final_date = deal.final_date.strftime("%m/%d/%Y")
+        context = {'context': context[0], 
+			        'empl': employees, 
+			        'emp_active': emp_active, 
+			        'deal':deal, 
+			        'f_date':final_date, 
+			        'stt': ['inprocess','postponed', 'done']}
         return render(request, "employee/manager/requests_settings.html", context)
+
 
 
 def dictfetchall(cursor):
